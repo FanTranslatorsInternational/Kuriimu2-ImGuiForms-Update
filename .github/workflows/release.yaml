@@ -73,5 +73,4 @@ jobs:
       with:
         artifacts: "./Kuriimu2.ImGui_Win_${{ steps.windows_version.outputs.prop }}_${{ steps.windows_build.outputs.prop }}.zip,./Kuriimu2.ImGui_Linux_${{ steps.linux_version.outputs.prop }}_${{ steps.linux_build.outputs.prop }}.zip,./Kuriimu2.ImGui_Mac_${{ steps.mac_version.outputs.prop }}_${{ steps.mac_build.outputs.prop }}.zip"
         tag: ${{ steps.windows_version.outputs.prop }}-${{ steps.windows_build.outputs.prop }}
-        generateReleaseNotes: true
         
