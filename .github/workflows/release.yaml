@@ -1,0 +1,76 @@
+name: Beta Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+
+  build:
+    runs-on: windows-latest
+
+    permissions:
+      contents: write
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Wait for other beta builds
+      uses: softprops/turnstyle@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Get Windows manifest build number
+      id: windows_build
+      uses: notiz-dev/github-action-json-property@release
+      with: 
+        path: './Windows/manifest.json'
+        prop_path: 'build_number'
+
+    - name: Get Windows manifest version
+      id: windows_version
+      uses: notiz-dev/github-action-json-property@release
+      with: 
+        path: './Windows/manifest.json'
+        prop_path: 'version'
+
+    - name: Get Linux manifest build number
+      id: linux_build
+      uses: notiz-dev/github-action-json-property@release
+      with: 
+        path: './Linux/manifest.json'
+        prop_path: 'build_number'
+
+    - name: Get Linux manifest version
+      id: linux_version
+      uses: notiz-dev/github-action-json-property@release
+      with: 
+        path: './Linux/manifest.json'
+        prop_path: 'version'
+
+    - name: Get Mac manifest build number
+      id: mac_build
+      uses: notiz-dev/github-action-json-property@release
+      with: 
+        path: './Mac/manifest.json'
+        prop_path: 'build_number'
+
+    - name: Get Mac manifest version
+      id: mac_version
+      uses: notiz-dev/github-action-json-property@release
+      with: 
+        path: './Mac/manifest.json'
+        prop_path: 'version'
+
+    - name: Rename artifacts
+      run: |
+        mv ./Windows/latest.zip ./Kuriimu2.ImGui_Win_${{ steps.windows_version.outputs.prop }}_${{ steps.windows_build.outputs.prop }}.zip
+        mv ./Linux/latest.zip ./Kuriimu2.ImGui_Linux_${{ steps.linux_version.outputs.prop }}_${{ steps.linux_build.outputs.prop }}.zip
+        mv ./Mac/latest.zip ./Kuriimu2.ImGui_Mac_${{ steps.mac_version.outputs.prop }}_${{ steps.mac_build.outputs.prop }}.zip
+
+    - uses: ncipollo/release-action@v1
+      with:
+        artifacts: "./Kuriimu2.ImGui_Win_${{ steps.windows_version.outputs.prop }}_${{ steps.windows_build.outputs.prop }}.zip,./Kuriimu2.ImGui_Linux_${{ steps.linux_version.outputs.prop }}_${{ steps.linux_build.outputs.prop }}.zip,./Kuriimu2.ImGui_Mac_${{ steps.mac_version.outputs.prop }}_${{ steps.mac_build.outputs.prop }}.zip"
+        tag: ${{ steps.windows_version.outputs.prop }}-${{ steps.windows_build.outputs.prop }}
+        
